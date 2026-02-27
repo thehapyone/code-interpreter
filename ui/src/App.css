@@ -1,0 +1,181 @@
+:root {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #0f172a;
+  background-color: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f1f5f9;
+}
+
+.app-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 10px 15px -15px rgba(15, 23, 42, 0.3);
+}
+
+.panel h2 {
+  margin-top: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+input,
+select,
+textarea {
+  border-radius: 8px;
+  border: 1px solid #cbd5f5;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+button {
+  border-radius: 999px;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #2563eb;
+  color: #fff;
+  transition: opacity 0.2s ease;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.status {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.status.success {
+  color: #16a34a;
+}
+
+.status.loading {
+  color: #2563eb;
+}
+
+.status.error {
+  color: #dc2626;
+}
+
+.capabilities,
+.files {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.capabilities th,
+.capabilities td,
+.files th,
+.files td {
+  border: 1px solid #e2e8f0;
+  padding: 0.6rem;
+  text-align: left;
+}
+
+.capabilities th,
+.files th {
+  background: #f8fafc;
+}
+
+.ok {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.warn {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.output {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.code-label {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: 1.25rem;
+  }
+
+  button {
+    width: 100%;
+  }
+}

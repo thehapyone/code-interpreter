@@ -1,0 +1,1110 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MCP Code Interpreter",
+    "description": "REST + MCP server for sandboxed code execution compatible with any MCP-compliant client",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/upload": {
+      "post": {
+        "summary": "Upload Files Rest",
+        "description": "REST upload endpoint backed by SessionRegistry.",
+        "operationId": "upload_files_rest_upload_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_files_rest_upload_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/libraries": {
+      "get": {
+        "summary": "List Libraries",
+        "operationId": "list_libraries_libraries_get",
+        "parameters": [
+          {
+            "name": "runtime",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional runtime filter",
+              "title": "Runtime"
+            },
+            "description": "Optional runtime filter"
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/{session_id}": {
+      "get": {
+        "summary": "List Files Rest",
+        "description": "List files for a given session via SessionRegistry.",
+        "operationId": "list_files_rest_files__session_id__get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "detail",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "simple",
+                "summary",
+                "full"
+              ],
+              "type": "string",
+              "default": "simple",
+              "title": "Detail"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/FileRef"
+                      },
+                      {
+                        "$ref": "#/components/schemas/FileObject"
+                      }
+                    ]
+                  },
+                  "title": "Response List Files Rest Files  Session Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/{session_id}/{file_id}": {
+      "delete": {
+        "summary": "Delete File Rest",
+        "description": "Delete a file from a session.",
+        "operationId": "delete_file_rest_files__session_id___file_id__delete",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "file_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "File Id"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Delete File Rest Files  Session Id   File Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/download/{session_id}/{file_id}": {
+      "get": {
+        "summary": "Download File Rest",
+        "description": "Download a file from a session.",
+        "operationId": "download_file_rest_download__session_id___file_id__get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "file_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "File Id"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Health check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "API documentation",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RootResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exec": {
+      "post": {
+        "summary": "Exec Rest",
+        "description": "OpenAPI-compatible execute endpoint backed by ExecutionService.",
+        "operationId": "exec_rest_exec_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestExecRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exec/stream": {
+      "post": {
+        "summary": "Exec Rest Stream",
+        "description": "Server-Sent Event variant of the execute endpoint.",
+        "operationId": "exec_rest_stream_exec_stream_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestExecRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_upload_files_rest_upload_post": {
+        "properties": {
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "files": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Files"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "binary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "title": "Body_upload_files_rest_upload_post"
+      },
+      "ExecuteResponse": {
+        "properties": {
+          "stdout": {
+            "type": "string",
+            "title": "Stdout",
+            "default": ""
+          },
+          "stderr": {
+            "type": "string",
+            "title": "Stderr",
+            "default": ""
+          },
+          "run": {
+            "$ref": "#/components/schemas/RunResult"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/FileRef"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run",
+          "files",
+          "language",
+          "session_id"
+        ],
+        "title": "ExecuteResponse",
+        "description": "Unified response model returned by /exec."
+      },
+      "FileObject": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "fileId": {
+            "type": "string",
+            "title": "Fileid"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size"
+          },
+          "lastModified": {
+            "type": "string",
+            "title": "Lastmodified"
+          },
+          "etag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Etag"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          },
+          "contentType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contenttype"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "fileId",
+          "name",
+          "filename",
+          "session_id",
+          "path",
+          "size",
+          "lastModified"
+        ],
+        "title": "FileObject",
+        "description": "Detailed file metadata matching LibreChat's schema."
+      },
+      "FileRef": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "session_id",
+          "path"
+        ],
+        "title": "FileRef",
+        "description": "Summary describing a file stored in the session workspace."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "active_sessions": {
+            "type": "integer",
+            "title": "Active Sessions"
+          },
+          "cleaned_sessions": {
+            "type": "integer",
+            "title": "Cleaned Sessions"
+          },
+          "notebooks_dir": {
+            "type": "string",
+            "title": "Notebooks Dir"
+          },
+          "uploads_dir": {
+            "type": "string",
+            "title": "Uploads Dir"
+          },
+          "max_sessions": {
+            "type": "integer",
+            "title": "Max Sessions"
+          },
+          "execution_timeout": {
+            "type": "integer",
+            "title": "Execution Timeout"
+          },
+          "runtime_capabilities": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Runtime Capabilities"
+          },
+          "runtime_libraries": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime Libraries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "active_sessions",
+          "cleaned_sessions",
+          "notebooks_dir",
+          "uploads_dir",
+          "max_sessions",
+          "execution_timeout",
+          "runtime_capabilities"
+        ],
+        "title": "HealthResponse"
+      },
+      "RestExecRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "lang": {
+            "type": "string",
+            "enum": [
+              "py",
+              "python",
+              "bash",
+              "sh",
+              "js",
+              "javascript",
+              "node",
+              "ts",
+              "typescript",
+              "go",
+              "cpp",
+              "c++"
+            ],
+            "title": "Lang",
+            "description": "Language code (py, bash, js, ts, go, cpp, etc.)"
+          },
+          "args": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Args"
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id",
+            "description": "Optional assistant/agent identifier (<=40 chars, alphanumeric, '_' or '-')"
+          },
+          "files": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/RestRequestFile"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "lang"
+        ],
+        "title": "RestExecRequest",
+        "description": "OpenAPI-style execute request for LibreChat compatibility."
+      },
+      "RestRequestFile": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "File ID within the session registry"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id",
+            "description": "Session ID owning the file"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Original file name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "session_id",
+          "name"
+        ],
+        "title": "RestRequestFile",
+        "description": "Minimal file reference passed in execute payloads."
+      },
+      "RootResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Features"
+          },
+          "endpoints": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Endpoints"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "version",
+          "features",
+          "endpoints"
+        ],
+        "title": "RootResponse"
+      },
+      "RunResult": {
+        "properties": {
+          "stdout": {
+            "type": "string",
+            "title": "Stdout",
+            "default": ""
+          },
+          "stderr": {
+            "type": "string",
+            "title": "Stderr",
+            "default": ""
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "signal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signal"
+          },
+          "output": {
+            "type": "string",
+            "title": "Output",
+            "default": ""
+          },
+          "memory": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "cpu_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cpu Time"
+          },
+          "wall_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wall Time"
+          }
+        },
+        "type": "object",
+        "title": "RunResult",
+        "description": "Sub-structure mirroring LibreChat's ExecuteResponse.run payload."
+      },
+      "UploadResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/FileObject"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "session_id",
+          "files"
+        ],
+        "title": "UploadResponse",
+        "description": "Formal response for /upload, mirroring LibreChat expectations."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

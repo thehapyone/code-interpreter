@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f1f5f9;
+}
+
+#root {
+  min-height: 100vh;
+}

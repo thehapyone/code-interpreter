@@ -1,0 +1,21 @@
+name: Sync dependencies (conditional)
+description: Conditionally runs uv sync when dependency files change.
+runs:
+  using: composite
+  steps:
+    - name: Trust workspace for git
+      shell: bash
+      run: git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+    - name: Detect dependency changes
+      id: deps
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          deps:
+            - 'pyproject.toml'
+            - 'uv.lock'
+            - 'uv.lock.*'
+    - name: Sync dependencies
+      if: steps.deps.outputs.deps == 'true'
+      shell: bash
+      run: uv sync --frozen --dev

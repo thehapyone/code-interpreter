@@ -1,0 +1,142 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+  packages: read
+
+jobs:
+  wait-for-ci-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Detect CI image changes
+        id: deps
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            ci_image:
+              - 'Dockerfile.ci'
+              - 'pyproject.toml'
+              - 'uv.lock'
+              - 'uv.lock.*'
+              - 'ci/**'
+      - name: Wait for CI image to be available
+        if: steps.deps.outputs.ci_image == 'true'
+        env:
+          # On push to main, ci-image.yml runs concurrently so we poll.
+          # On PRs, no new image is built; just verify the existing image is present.
+          MAX_ATTEMPTS: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && '30' || '1' }}
+        run: |
+          set -euo pipefail
+          image="ghcr.io/thehapyone/code-interpreter-ci:latest"
+          for i in $(seq 1 "$MAX_ATTEMPTS"); do
+            if docker manifest inspect "$image" >/dev/null 2>&1; then
+              echo "CI image is available."
+              exit 0
+            fi
+            echo "Waiting for CI image... ($i/$MAX_ATTEMPTS)"
+            [[ $i -lt $MAX_ATTEMPTS ]] && sleep 10
+          done
+          echo "CI image not available after waiting."
+          exit 1
+
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/thehapyone/code-interpreter-ci:latest
+    needs: wait-for-ci-image
+    if: needs.wait-for-ci-image.result == 'success' || needs.wait-for-ci-image.result == 'skipped'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync dependencies (if needed)
+        uses: ./.github/actions/sync-deps
+      - name: Ruff lint
+        run: make lint
+
+  openapi-check:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/thehapyone/code-interpreter-ci:latest
+    needs: wait-for-ci-image
+    if: needs.wait-for-ci-image.result == 'success' || needs.wait-for-ci-image.result == 'skipped'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync dependencies (if needed)
+        uses: ./.github/actions/sync-deps
+      - name: OpenAPI check
+        run: make openapi-check
+
+  typecheck:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/thehapyone/code-interpreter-ci:latest
+    needs: wait-for-ci-image
+    if: needs.wait-for-ci-image.result == 'success' || needs.wait-for-ci-image.result == 'skipped'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync dependencies (if needed)
+        uses: ./.github/actions/sync-deps
+      - name: Mypy
+        run: make typecheck
+
+  unit:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/thehapyone/code-interpreter-ci:latest
+    needs: wait-for-ci-image
+    if: needs.wait-for-ci-image.result == 'success' || needs.wait-for-ci-image.result == 'skipped'
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync dependencies (if needed)
+        uses: ./.github/actions/sync-deps
+      - name: Unit tests
+        run: make coverage
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: reports/coverage.xml
+      - name: Upload junit
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit
+          path: reports/junit.xml
+
+  e2e:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/thehapyone/code-interpreter-ci:latest
+    needs: wait-for-ci-image
+    if: needs.wait-for-ci-image.result == 'success' || needs.wait-for-ci-image.result == 'skipped'
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+      API_KEY: dev-demo-key
+      PORT: "8000"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync dependencies (if needed)
+        uses: ./.github/actions/sync-deps
+      - name: E2E smoke tests
+        run: make e2e
+      - name: Upload e2e artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-artifacts
+          path: |
+            reports/e2e-server.log
+            e2e/runs/
